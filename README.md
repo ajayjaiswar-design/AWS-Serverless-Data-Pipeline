@@ -187,22 +187,21 @@ The query results are stored in the following Amazon S3 location:
 
 ### 6.5 Data Warehousing – Amazon Redshift Serverless
 
-Amazon Redshift Serverless serves as the analytical data warehouse for the business intelligence workflow.
+Amazon Redshift Serverless is used as the data warehouse for storing and querying the processed support logs and support tickets for analytical reporting.
 
-Processed support logs and support tickets are made available from Amazon S3 and loaded into Redshift for centralized analytical querying and reporting.
+A database named *careplus-db* was created in Amazon Redshift, with the *support_logs* and *support_tickets* tables created under the *public* schema to store the corresponding datasets.
 
-**Workflow:**
+To automate data loading, S3 event notifications are configured to trigger the respective AWS Lambda functions whenever new files arrive in the processed-data locations.
 
-1. Processed data is stored in Amazon S3.
-2. The data is loaded into Amazon Redshift Serverless.
-3. The warehouse provides a centralized location for analytical queries and reporting.
-4. The resulting datasets can be accessed by Power BI.
+**Incremental data-loading workflows:**
+
+- **Support Logs:** The S3 event notification *trigger_incremental_data_logs* invokes the Lambda function *Incremental_data_load_logs* when new files arrive in *support-logs/processed/*. The function loads the new data into the *public.support_logs* table in Amazon Redshift.
+- **Support Tickets:** The S3 event notification *trigger_incremental_data_tickets* invokes the Lambda function *Incremental_data_load_tickets* when new files arrive in *support-tickets/processed/*. The function loads the new data into the *public.support_tickets* table in Amazon Redshift.
 
 **Data flow:**
 
-`Amazon S3 (Processed Data) → Amazon Redshift Serverless`
-
-The specific loading mechanism, warehouse schema, and refresh strategy depend on the implementation and are not specified in the supplied architecture.
+- **Support Logs:** `Amazon S3 (support-logs/processed/) → S3 Event Notification (trigger_incremental_data_logs) → Lambda (Incremental_data_load_logs) → Amazon Redshift (public.support_logs)`
+- **Support Tickets:** `Amazon S3 (support-tickets/processed/) → S3 Event Notification (trigger_incremental_data_tickets) → Lambda (Incremental_data_load_tickets) → Amazon Redshift (public.support_tickets)`
 
 ### 6.6 Business Intelligence and Visualization – Power BI
 
