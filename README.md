@@ -10,8 +10,8 @@ The pipeline uses Amazon S3 for data storage, AWS Lambda and AWS Glue for data p
 
 The solution supports two primary analytical workflows:
 
-- Ad-hoc Analysis: Query processed data stored in Amazon S3 using Amazon Athena.
-- Business Intelligence: Load processed data into Amazon Redshift Serverless and connect Power BI for reporting and visualization.
+- **Ad-hoc Analysis:** Query processed data stored in Amazon S3 using Amazon Athena.
+- **Business Intelligence:** Load processed data into Amazon Redshift Serverless and connect Power BI for reporting and visualization.
 
 ## 2. Problem Statement
 
@@ -43,8 +43,8 @@ The architecture separates raw-data storage, data processing, processed-data sto
 
 The pipeline branches into two analytical workflows after data processing:
 
-1. SQL Analytics: Amazon S3 → Amazon Athena → Ad-hoc Analysis.
-2. Business Intelligence: Amazon S3 → Amazon Redshift Serverless → Power BI.
+1. **SQL Analytics:** Amazon S3 → Amazon Athena → Ad-hoc Analysis.
+2. **Business Intelligence:** Amazon S3 → Amazon Redshift Serverless → Power BI.
 
 ## 5. AWS Services and Tools Used
 
@@ -65,8 +65,8 @@ The pipeline branches into two analytical workflows after data processing:
 
 The CarePlus System generates two categories of operational data:
 
-- Support Logs: Application or system log data.  
-- Support Tickets: Data associated with customer support requests.  
+- **Support Logs:** Application or system log data.  
+- **Support Tickets:** Data associated with customer support requests.  
 
 Both datasets follow separate processing workflows before becoming available for analysis.
 
@@ -158,20 +158,32 @@ careplus_ds/
 
 ### 6.4 Ad-hoc SQL Analysis – Amazon Athena
 
-Amazon Athena enables ad-hoc SQL queries against processed datasets stored in Amazon S3.
+Amazon Athena is used to query the processed support logs and support tickets stored in Amazon S3. AWS Glue crawlers discover the processed datasets, infer their schemas, and create tables in the AwsDataCatalog for querying through Athena.
 
-This allows analysts to explore support data without first loading it into a separate database or data warehouse.
+A database named careplus_db was created in Amazon Athena to organize the cataloged support datasets. The following AWS Glue crawlers populate this database with metadata for the processed data:
+
+- **crawl_support_logs:** Crawls *support-logs/processed/* and creates the Athena table *support_logs_processed*.
+- **crawl_support_tickets:** Crawls *support-tickets/processed/* and creates the Athena table *support_tickets_processed*.
+
+Once the crawlers complete successfully, the cataloged tables can be queried using SQL in Amazon Athena. Athena executes queries directly against the underlying S3 data, enabling ad-hoc analysis without loading the datasets into a separate database.
+
+The query results are stored in the following Amazon S3 location:
+
+**Query results location:** *s3://careplus-ds/careplus-athena-results/*
 
 **Workflow:**
 
-1. Processed support logs and support tickets are stored in Amazon S3.
-2. The datasets are made available for querying through appropriately configured Athena tables.
-3. SQL queries are executed against the processed data.
-4. Query results are used for ad-hoc analysis and exploration.
+1. Processed support logs and support tickets are stored in Amazon S3 in Apache Parquet format.
+2. AWS Glue crawlers scan their respective S3 prefixes and catalog the datasets.
+3. The crawlers create or update table metadata in the AWS Glue Data Catalog.
+4. Amazon Athena uses the cataloged tables to execute SQL queries.
+5. Query results are saved to s3://careplus-ds/careplus-athena-results/ for access and further analysis.
 
 **Data flow:**
 
-`Amazon S3 (Processed Parquet Data) → Amazon Athena → Ad-hoc SQL Analysis`
+- **Support Logs:** `Amazon S3 (support-logs/processed/) → AWS Glue Crawler (crawl_support_logs) → Athena Table (support_logs_processed)`
+- **Support Tickets:** `Amazon S3 (support-tickets/processed/) → AWS Glue Crawler (crawl_support_tickets) → Athena Table (support_tickets_processed)`
+- **Query Results:** `Amazon Athena → Amazon S3 (careplus-athena-results/)`
 
 ### 6.5 Data Warehousing – Amazon Redshift Serverless
 
