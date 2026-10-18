@@ -101,39 +101,42 @@ The raw data is subsequently processed by AWS Lambda for support logs and AWS Gl
 
 ### 6.3 Data Processing and Transformation
 
-The pipeline uses AWS Lambda and AWS Glue to process the two categories of support data.
+Amazon S3 event notifications are configured to automatically trigger the respective processing workflows whenever new files are uploaded to the raw-data prefixes. This event-driven approach eliminates the need to manually initiate data processing.
 
 #### A. Support Logs – AWS Lambda
 
-AWS Lambda processes the raw support log data stored in Amazon S3.
+An S3 event notification is configured for the support-logs/raw/ prefix. Whenever a new file is uploaded to this location, it triggers the Lambda function trigger_automate_logs_etl.
+
+The Lambda function executes the data transformation logic and stores the transformed output in Apache Parquet format under the support-logs/processed/ prefix in the same S3 bucket.
 
 **Workflow:**
 
-1. Raw support logs are stored in Amazon S3.
-2. AWS Lambda executes the log-processing logic.
-3. The processed support logs are written back to Amazon S3.
+1. Raw support log files are uploaded to Amazon S3.
+2. The S3 event notification triggers trigger_automate_logs_etl.
+3. The Lambda function processes and transforms the input data.
+4. The transformed data is stored in Parquet format in the processed-data prefix.
 
 **Data flow:**
 
-`Amazon S3 (Raw Support Logs) → AWS Lambda → Amazon S3 (Processed Support Logs)`
+`Amazon S3 (support-logs/raw/) → S3 Event Notification (trigger_automate_logs_etl) → AWS Lambda (automate_support_log_ETL) → Amazon S3 (support-logs/processed/ – Parquet)`
 
-AWS Lambda provides a serverless execution environment for processing log data without requiring the management of dedicated servers.
+#### B. Support Tickets – AWS Lambda and AWS Glue
 
-#### B. Support Tickets – AWS Glue
+An S3 event notification named trigger_automate_tickets_etl is configured to initiate the support ticket processing workflow whenever a new file is uploaded to the support-tickets/raw/ prefix.
 
-AWS Glue processes the raw support ticket data stored in Amazon S3.
+The event triggers the Lambda function automate_support_tickets_ETL, which invokes the AWS Glue job Automate_ETL_support_tickets. The Glue job performs the required data transformation and stores the processed support ticket data in Apache Parquet format under the support-tickets/processed/ prefix in the same S3 bucket.
 
 **Workflow:**
 
-1. Raw support ticket data is stored in Amazon S3.
-2. AWS Glue executes the ticket-processing and transformation logic.
-3. The processed support tickets are written back to Amazon S3.
+1. Raw support ticket files are uploaded to support-tickets/raw/ in Amazon S3.
+2. The S3 event notification trigger_automate_tickets_etl triggers the Lambda function automate_support_tickets_ETL.
+3. The Lambda function invokes the AWS Glue job Automate_ETL_support_tickets.
+4. The Glue job processes and transforms the support ticket data.
+5. The transformed data is stored in Parquet format under support-tickets/processed/.
 
 **Data flow:**
 
-`Amazon S3 (Raw Support Tickets) → AWS Glue → Amazon S3 (Processed Support Tickets)`
-
-AWS Glue provides a managed data-processing environment for transforming datasets and preparing them for analytical workloads.
+`Amazon S3 (support-tickets/raw/) → S3 Event Notification (trigger_automate_tickets_etl) → AWS Lambda (automate_support_tickets_ETL) → AWS Glue Job (Automate_ETL_support_tickets) → Amazon S3 (support-tickets/processed/ – Parquet)`
 
 ### 6.4 Processed Data Storage – Apache Parquet
 
