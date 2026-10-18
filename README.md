@@ -291,9 +291,7 @@ The expected outcomes include:
 - **Centralized analytical warehouse:** *Amazon Redshift Serverless provides a destination for analytical datasets.*
 - **Business intelligence reporting:** *Power BI can visualize warehouse data through reports and dashboards.*
 
-Together, these capabilities demonstrate how a serverless data pipeline can establish a foundation for consolidating operational data and improving access to analytical information.
-
-The degree to which the solution eliminates manual reporting, standardizes business metrics, or establishes a complete Single Source of Truth depends on the implemented transformations, data integration, validation rules, and warehouse design.
+Together, these AWS services enable centralized data processing, efficient analysis, and Power BI reporting, providing a foundation for improved decision-making and consistent business insights.
 
 ## 9. Key Learnings
 
