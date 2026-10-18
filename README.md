@@ -99,7 +99,7 @@ careplus_ds/
 
 The raw data is subsequently processed by AWS Lambda for support logs and AWS Glue for support tickets. The resulting datasets are stored under their respective processed/ prefixes in Amazon S3.
 
-### 6.3 Data Processing and Transformation
+### 6.3 Data Processing, Transformation, and Storage
 
 Amazon S3 event notifications are configured to automatically trigger the respective processing workflows whenever new files are uploaded to the raw-data prefixes. This event-driven approach eliminates the need to manually initiate data processing.
 
@@ -156,19 +156,7 @@ careplus_ds/
         └── *.parquet
 ```
 
-### 6.4 Processed Data Storage – Apache Parquet
-
-After processing, support logs and support tickets are stored in Amazon S3 in Apache Parquet format.
-
-Parquet is a columnar storage format well suited to analytical workloads because it supports efficient column-based data access and compression.
-
-The processed-data layer provides a consistent source for downstream SQL analysis and data warehousing.
-
-**Data flow:**
-
-`AWS Lambda / AWS Glue → Amazon S3 (Processed Data in Parquet Format)`
-
-### 6.5 Ad-hoc SQL Analysis – Amazon Athena
+### 6.4 Ad-hoc SQL Analysis – Amazon Athena
 
 Amazon Athena enables ad-hoc SQL queries against processed datasets stored in Amazon S3.
 
@@ -185,7 +173,7 @@ This allows analysts to explore support data without first loading it into a sep
 
 `Amazon S3 (Processed Parquet Data) → Amazon Athena → Ad-hoc SQL Analysis`
 
-### 6.6 Data Warehousing – Amazon Redshift Serverless
+### 6.5 Data Warehousing – Amazon Redshift Serverless
 
 Amazon Redshift Serverless serves as the analytical data warehouse for the business intelligence workflow.
 
@@ -204,7 +192,7 @@ Processed support logs and support tickets are made available from Amazon S3 and
 
 The specific loading mechanism, warehouse schema, and refresh strategy depend on the implementation and are not specified in the supplied architecture.
 
-### 6.7 Business Intelligence and Visualization – Power BI
+### 6.6 Business Intelligence and Visualization – Power BI
 
 Power BI connects to Amazon Redshift Serverless to support reporting and business intelligence.
 
