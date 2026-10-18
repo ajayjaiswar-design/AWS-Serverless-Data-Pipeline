@@ -205,20 +205,52 @@ To automate data loading, S3 event notifications are configured to trigger the r
 
 ### 6.6 Business Intelligence and Visualization – Power BI
 
-Power BI connects to Amazon Redshift Serverless to support reporting and business intelligence.
+Power BI connects to Amazon Redshift Serverless to visualize the CarePlus support ticket and support log datasets. 
+Two dashboards were developed: **Careplus Ticket Insights** and **Careplus Support Logs**. These dashboards summarize ticket status, agent workload, issue resolution time, application log activity, CPU utilization, and response performance.
 
-Data available in the warehouse can be used to develop reports and dashboards that help analyze support-related information and operational performance.
+#### A. Careplus Ticket Insights Dashboard
 
-**Workflow:**
+The **Careplus Ticket Insights** dashboard provides an overview of support ticket volume, resolution status, agent workload, and resolution time.
 
-1. Connect Power BI to Amazon Redshift Serverless.
-2. Access the relevant datasets and analytical queries.
-3. Develop reports and dashboards.
-4. Visualize support-related information for business analysis.
+**Key performance indicators (KPIs):**
+
+- **Total Tickets**
+- **Resolved Tickets**
+- **Open Tickets**
+- **Escalated Tickets**
+- **Total Agents**
+- **Average Interactions**
+- **Average Resolution Time**
+
+**Visualizations and insights:**
+
+- **Total Tickets by Channel and Status**
+- **Total Tickets by Agent**
+- **Average Resolution Minutes by Issue Category**
+- **Average Resolution Minutes by Priority**
+- **Ticket Details Table**
+
+#### B. Careplus Support Logs Dashboard
+
+The **Careplus Support Logs** dashboard summarizes application log volume, log severity, CPU utilization, and response-time performance. A date selector is provided for reviewing logs by day.
+
+**Key performance indicators (KPIs):**
+
+- **Total Logs**
+- **Logged Tickets**
+- **Average CPU Utilization**
+- **Average Response Time**
+
+**Visualizations and insights:**
+
+- **Average CPU (%) by Timestamp**
+- **Total Logs by User Agent**
+- **Total Logs by Log Level**
+- **Total Logs and Logged Tickets by Response-Time Range**
 
 **Data flow:**
 
-`Amazon Redshift Serverless → Power BI → Reports and Dashboards`
+`Amazon Redshift Serverless → Power BI → Careplus Ticket Insights and Careplus – Support Logs Dashboards`
 
 ## 7. End-to-End Data Flow
 
